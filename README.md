@@ -18,6 +18,8 @@ A microservice for handling authentication and authorization using FastAPI and J
 
 ## Installation
 
+### Option 1: Local Development
+
 1. Clone the repository
 2. Create a virtual environment:
    ```bash
@@ -29,12 +31,18 @@ A microservice for handling authentication and authorization using FastAPI and J
    pip install -r requirements.txt
    ```
 4. Configure the environment variables in `.env` file
+5. Run the service:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
-## Running the service
+### Option 2: Docker
 
-```bash
-uvicorn app.main:app --reload
-```
+1. Clone the repository
+2. Build and run with Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
 
 The API will be available at http://localhost:8000
 
@@ -106,3 +114,13 @@ The service implements RBAC with the following roles:
 ## Database Migrations
 
 This service uses SQLAlchemy models. For production, you might want to add Alembic for database migrations.
+
+## Docker Configuration
+
+The service is configured to run in Docker with a PostgreSQL database:
+
+- The API service runs on port 8000
+- PostgreSQL runs on port 5432
+- Data is persisted in a Docker volume
+
+To customize the configuration, edit the environment variables in the `docker-compose.yml` file.

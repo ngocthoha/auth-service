@@ -2,11 +2,14 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
 from app.api.api import api_router
 from app.core.config import settings
-from app.db.session import get_db
+from app.db.base import Base
+from app.db.session import engine, get_db
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -37,10 +40,9 @@ def health_check(db: Session = Depends(get_db)):
     Health check endpoint for the API and database connection
     """
     # Check database connection by executing a simple query
-    # Use text() to explicitly declare the SQL as text
-    db.execute(text("SELECT 1"))
+    db.execute("SELECT 1")
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)

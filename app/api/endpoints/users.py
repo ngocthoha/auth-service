@@ -1,5 +1,5 @@
 from typing import Any, List
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
@@ -115,12 +115,13 @@ def update_user(
     return user
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}")
 def delete_user(
     user_id: str,
+    response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(check_permission(ResourceEnum.USERS, ActionEnum.DELETE)),
-) -> Any:
+):
     """
     Delete a user - requires DELETE permission
     """
@@ -139,4 +140,5 @@ def delete_user(
     
     db.delete(user)
     db.commit()
-    return None 
+    
+    response.status_code = status.HTTP_204_NO_CONTENT 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -72,26 +72,28 @@ def refresh_token(
     )
 
 
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/logout")
 def logout(
     refresh_token: str,
+    response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
-) -> None:
+):
     """
     Logout by revoking the refresh token
     """
     TokenService.revoke_refresh_token(refresh_token, db)
-    return None
+    response.status_code = status.HTTP_204_NO_CONTENT
 
 
-@router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/logout-all")
 def logout_all(
+    response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
-) -> None:
+):
     """
     Logout from all devices by revoking all refresh tokens for the user
     """
     TokenService.revoke_all_user_tokens(current_user.id, db)
-    return None 
+    response.status_code = status.HTTP_204_NO_CONTENT 
